@@ -3,6 +3,7 @@ import { getSession } from 'next-auth/react';
 import { useState } from "react";
 import { useEffect } from "react"
 import axios from 'axios';
+import { id } from "date-fns/locale";
 
 export function useUser() {
   const [nombre, setNombre] = useState('');
@@ -14,20 +15,22 @@ export function useUser() {
   const [rol, setRol] = useState('');
   const [user, setUser] = useState('');
   const { data: session, status } = useSession();
-  const [permisos, setPermisos] = useState([]);
-
+  const [permisos, setPermisos] = useState([]);  
+  
   useEffect(() => {
+    if (!idUser) return;
     const fetchPermissions = async () => {
       try {
-        const response = await axios.get(`/api/MarketingLabel/permiso?userId=${idUser}`) // Asegúrate de que esta ruta esté configurada en tu backend
-        setPermisos(response.data)
-        console.log("PERMISOS USUARIO: " + JSON.stringify(response.data))
+        const response = await axios.get(`/api/MarketingLabel/permiso?userId=${idUser}`);
+        if (JSON.stringify(permisos) !== JSON.stringify(response.data)) {
+          setPermisos(response.data);
+        }
       } catch (error) {
-        console.error('Error al obtener permisos:', error)
+        console.error('Error al obtener permisos:', error);
       }
-    }
-    fetchPermissions()
-  }, [idUser])
+    };
+    fetchPermissions();
+  }, [idUser]);
 
   // Función para verificar si el usuario tiene permiso en la sección y campo específicos
   const tienePermiso = (seccion, campo) => {
@@ -51,7 +54,7 @@ export function useUser() {
           body: JSON.stringify({ correo: session.user.email }),
         });
         const userData = await response.json();
-        if (userData.success) {
+        if (userData.success && userData.user.id !== idUser) {
           setUser(userData.user);
           setNombre(userData.user.nombre);
           setApellidos(userData.user.apellidos);

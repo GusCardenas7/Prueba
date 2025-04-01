@@ -21,15 +21,14 @@ export default function RootLayout({ children}) {
    
     
   return (
-    <SessionProvider>
      <html lang="en">
-    <head>
+    {/* <head>
       <title>AIONET</title>
       <meta name="description" content="Bienvenido a AIONET, la plataforma ..." />
       <link rel="icon" type="image/png" sizes="16x16" href="/logo1.png" />
-    </head>
-    <body className={inter.className}>
-     
+    </head> */}
+    <body suppressHydrationWarning={true}>
+    <SessionProvider> 
     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
   {/* Navbar */}
   {showNavbar && showNavbar3 && showNavbar2 && (
@@ -71,9 +70,9 @@ export default function RootLayout({ children}) {
 </div>
 
       
+  </SessionProvider>
     </body>
   </html>
-  </SessionProvider>
 
   );
 }

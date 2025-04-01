@@ -3,23 +3,23 @@ import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "font-awesome/css/font-awesome.min.css";
-import { getSession } from 'next-auth/react';
+import { getSession } from "next-auth/react";
 import { Button } from "@mui/material";
 
 export function NotificationBell() {
   const [notificaciones, setNotificaciones] = useState([]);
   const [hasNotifications, setHasNotifications] = useState(false);
-  const [idUser, setID] = useState('');
-  const [departamento, setDepartamento] = useState('');
+  const [idUser, setID] = useState("");
+  const [departamento, setDepartamento] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const session = await getSession();
       if (session) {
-        const response = await fetch('/api/Users/getUser', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/Users/getUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ correo: session.user.email }),
         });
         const userData = await response.json();
@@ -27,7 +27,7 @@ export function NotificationBell() {
           setID(userData.user.id);
           setDepartamento(userData.user.departamento_id);
         } else {
-          alert('Error al obtener los datos del usuario');
+          alert("Error al obtener los datos del usuario");
         }
       }
     };
@@ -35,26 +35,29 @@ export function NotificationBell() {
   }, []);
 
   useEffect(() => {
+    if (!idUser) return;
     const fetchNotificaciones = async () => {
       try {
-        const response = await fetch(`/api/Reminder/notificaciones?id=${idUser}`);
+        const response = await fetch(
+          `/api/Reminder/notificaciones?id=${idUser}`
+        );
         const data = await response.json();
         setNotificaciones(data);
-        setHasNotifications(data.some(n => !n.leido));
+        setHasNotifications(data.some((n) => !n.leido));
       } catch (error) {
         console.error("Error al obtener notificaciones:", error);
       }
     };
-  
+
     fetchNotificaciones();
-  }, [idUser]);  
+  }, [idUser]);
 
   const fetchNotificacionesUpdate = async () => {
     try {
       const response = await fetch(`/api/Reminder/notificaciones?id=${idUser}`);
       const data = await response.json();
       setNotificaciones(data);
-      setHasNotifications(data.some(n => !n.leido));
+      setHasNotifications(data.some((n) => !n.leido));
     } catch (error) {
       console.error("Error al obtener notificaciones:", error);
     }
@@ -67,9 +70,9 @@ export function NotificationBell() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: idNotificacion, idUsuario: idUser }),
       });
-      setNotificaciones((prev) => prev.map(n => 
-        n.id === idNotificacion ? { ...n, leido: true } : n
-      ));
+      setNotificaciones((prev) =>
+        prev.map((n) => (n.id === idNotificacion ? { ...n, leido: true } : n))
+      );
       fetchNotificacionesUpdate();
     } catch (error) {
       console.error("Error al marcar como leída:", error);
@@ -124,7 +127,7 @@ export function NotificationBell() {
               alignItems: "center",
             }}
           >
-            {notificaciones.filter(n => !n.leido).length}
+            {notificaciones.filter((n) => !n.leido).length}
           </div>
         )}
       </button>
@@ -146,7 +149,14 @@ export function NotificationBell() {
             padding: "15px",
           }}
         >
-          <h3 style={{ textAlign: "center", borderBottom: "1px solid #ddd", paddingBottom: "10px", marginBottom: "10px" }}>
+          <h3
+            style={{
+              textAlign: "center",
+              borderBottom: "1px solid #ddd",
+              paddingBottom: "10px",
+              marginBottom: "10px",
+            }}
+          >
             Notificaciones
           </h3>
           {notificaciones.length > 0 ? (
@@ -162,33 +172,66 @@ export function NotificationBell() {
                     padding: "12px",
                     border: "1px solid #ddd",
                     borderRadius: "8px",
-                    backgroundColor: notificacion.leido ? "rgba(0,0,0,0.1)" : "#f9f9f9",
+                    backgroundColor: notificacion.leido
+                      ? "rgba(0,0,0,0.1)"
+                      : "#f9f9f9",
                     filter: notificacion.leido ? "blur(0.6px)" : "none",
                   }}
                 >
                   <strong>{notificacion.tipo}</strong>
-                  <p dangerouslySetInnerHTML={{ __html: notificacion.descripcion }} style={{ fontSize: "14px" }} />
-                  <small style={{ color: "gray" }}>{new Date(notificacion.fecha).toLocaleString()}</small>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: notificacion.descripcion,
+                    }}
+                    style={{ fontSize: "14px" }}
+                  />
+                  <small style={{ color: "gray" }}>
+                    {new Date(notificacion.fecha).toLocaleString()}
+                  </small>
                   {notificacion.leido ? (
-                    <div style={{display: "flex", justifyContent: "space-between", gap: "5px"}}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: "5px",
+                      }}
+                    >
                       <Button
                         variant="contained"
                         color="secondary"
                         size="small"
-                        onClick={() => eliminarNotificacion(notificacion.id_notificacion)}
-                        style={{ minWidth: "100px", textTransform: "none", background: "rgb(31 41 55)" }}
+                        onClick={() =>
+                          eliminarNotificacion(notificacion.id_notificacion)
+                        }
+                        style={{
+                          minWidth: "100px",
+                          textTransform: "none",
+                          background: "rgb(31 41 55)",
+                        }}
                       >
                         Eliminar
                       </Button>
                     </div>
-                    ) : (
-                    <div style={{display: "flex", justifyContent: "space-between", gap: "5px"}}>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: "5px",
+                      }}
+                    >
                       <Button
                         variant="contained"
                         color="primary"
                         size="small"
-                        onClick={() => marcarComoLeida(notificacion.id_notificacion)}
-                        style={{ minWidth: "100px", textTransform: "none", background: "rgb(31 41 55)" }}
+                        onClick={() =>
+                          marcarComoLeida(notificacion.id_notificacion)
+                        }
+                        style={{
+                          minWidth: "100px",
+                          textTransform: "none",
+                          background: "rgb(31 41 55)",
+                        }}
                         disabled={notificacion.leido}
                       >
                         Marcar como leída
@@ -197,18 +240,26 @@ export function NotificationBell() {
                         variant="contained"
                         color="secondary"
                         size="small"
-                        onClick={() => eliminarNotificacion(notificacion.id_notificacion)}
-                        style={{ minWidth: "100px", textTransform: "none", background: "rgb(31 41 55)" }}
+                        onClick={() =>
+                          eliminarNotificacion(notificacion.id_notificacion)
+                        }
+                        style={{
+                          minWidth: "100px",
+                          textTransform: "none",
+                          background: "rgb(31 41 55)",
+                        }}
                       >
                         Eliminar
                       </Button>
                     </div>
-                    )}
+                  )}
                 </li>
               ))}
             </ul>
           ) : (
-            <p style={{ textAlign: "center", padding: "10px" }}>No tienes notificaciones nuevas.</p>
+            <p style={{ textAlign: "center", padding: "10px" }}>
+              No tienes notificaciones nuevas.
+            </p>
           )}
         </div>
       )}

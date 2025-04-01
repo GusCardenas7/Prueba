@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   const form = new formidable.IncomingForm({
     multiples: true,
-    uploadDir: path.join(process.cwd(), 'uploads'), // Ruta válida para los archivos temporales
+    uploadDir: "/tmp",
     keepExtensions: true,
   });
 

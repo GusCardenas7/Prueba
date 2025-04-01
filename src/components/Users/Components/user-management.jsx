@@ -113,8 +113,8 @@ export function UserManagementTable() {
   const [company, setCompany] = useState('');
   const [workPlant, setWorkPlant] = useState('');
   const [selectedPermission, setSelectedPermission] = useState("")
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState('NutriAdmin2035');
+  const [confirmPassword, setConfirmPassword] = useState('NutriAdmin2035');
   const [users, setUsers] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -659,8 +659,8 @@ export function UserManagementTable() {
     setDirectBoss("");
     setCompany("");
     setWorkPlant("");
-    setPassword("");
-    setConfirmPassword("");
+    setPassword("NutriAdmin2035");
+    setConfirmPassword("NutriAdmin2035");
     setSelectedRole("");
   }
 
@@ -889,23 +889,38 @@ export function UserManagementTable() {
                   <Label htmlFor="directBoss">
                     Jefe Directo
                   </Label>
-                  <Select
-                    value={directBoss}
-                    onValueChange={(value) => setDirectBoss(value)}
-                    disabled={filteredUsersDpto.length === 0} // Deshabilitar si no hay usuarios disponibles
-                  >
+                  <Select onValueChange={(value) => setDirectBoss(value)} value={directBoss}>
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Seleccione el jefe directo" />
                     </SelectTrigger>
                     <SelectContent>
-                      {filteredUsersDpto.length > 0 ? (
-                        filteredUsersDpto.map((user) => (
-                          <SelectItem key={user.id.toString()} value={user.id.toString()}>
-                            {user.nombre + " " + user.apellidos}
-                          </SelectItem>
-                        ))
+                      {/* Input dentro del Select para filtrar, sin afectar la selección */}
+                      <div className="p-2">
+                        <Input
+                          ref={inputRef}
+                          placeholder="Buscar usuario..."
+                          value={searchTermPass}
+                          onChange={(e) => setSearchTermPass(e.target.value)}
+                        />
+                      </div>
+                      
+                      {/* Filtrado sin selección automática */}
+                      {users.filter(user => 
+                        user.nombre.toLowerCase().includes(searchTermPass.toLowerCase()) ||
+                        user.apellidos.toLowerCase().includes(searchTermPass.toLowerCase())
+                      ).length === 0 ? (
+                        <div className="p-2 text-center text-gray-500">No se encontraron usuarios</div>
                       ) : (
-                        <SelectItem disabled>No hay usuarios disponibles en este departamento</SelectItem>
+                        users
+                          .filter(user => 
+                            user.nombre.toLowerCase().includes(searchTermPass.toLowerCase()) ||
+                            user.apellidos.toLowerCase().includes(searchTermPass.toLowerCase())
+                          )
+                          .map(user => (
+                            <SelectItem key={user.id.toString()} value={user.id.toString()}>
+                              {user.nombre} {user.apellidos}
+                            </SelectItem>
+                          ))
                       )}
                     </SelectContent>
                   </Select>
@@ -1146,28 +1161,43 @@ export function UserManagementTable() {
                 <Label htmlFor="directBoss">
                   Jefe Directo
                 </Label>
-                <Select
-                  value={selectedUser?.jefe_directo?.toString() || ''} // Usar el jefe directo del usuario seleccionado
-                  onValueChange={(value) =>
+                <Select onValueChange={(value) =>
                     setSelectedUser((prevUser) => ({
                       ...prevUser,
                       jefe_directo: value, // Actualizar el jefe directo del usuario seleccionado
                     }))
-                  }
-                  disabled={filteredUsersDpto.length === 0} // Deshabilitar si no hay usuarios disponibles
-                >
+                  } value={selectedUser?.jefe_directo?.toString() || ''}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Seleccione el jefe directo" />
                   </SelectTrigger>
                   <SelectContent>
-                    {filteredUsersDpto.length > 0 ? (
-                      filteredUsersDpto.map((user) => (
-                        <SelectItem key={user.id.toString()} value={user.id.toString()}>
-                          {user.nombre + ' ' + user.apellidos}
-                        </SelectItem>
-                      ))
+                    {/* Input dentro del Select para filtrar, sin afectar la selección */}
+                    <div className="p-2">
+                      <Input
+                        ref={inputRef}
+                        placeholder="Buscar usuario..."
+                        value={searchTermPass}
+                        onChange={(e) => setSearchTermPass(e.target.value)}
+                      />
+                    </div>
+                    
+                    {/* Filtrado sin selección automática */}
+                    {users.filter(user => 
+                      user.nombre.toLowerCase().includes(searchTermPass.toLowerCase()) ||
+                      user.apellidos.toLowerCase().includes(searchTermPass.toLowerCase())
+                    ).length === 0 ? (
+                      <div className="p-2 text-center text-gray-500">No se encontraron usuarios</div>
                     ) : (
-                      <SelectItem disabled>No hay usuarios disponibles en este departamento</SelectItem>
+                      users
+                        .filter(user => 
+                          user.nombre.toLowerCase().includes(searchTermPass.toLowerCase()) ||
+                          user.apellidos.toLowerCase().includes(searchTermPass.toLowerCase())
+                        )
+                        .map(user => (
+                          <SelectItem key={user.id.toString()} value={user.id.toString()}>
+                            {user.nombre} {user.apellidos}
+                          </SelectItem>
+                        ))
                     )}
                   </SelectContent>
                 </Select>
