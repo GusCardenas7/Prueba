@@ -45,6 +45,7 @@ export function CMDProductos() {
   const [imagenes, setImagenes] = useState([]);
   const [nombreProveedor, setNombreProveedor] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [productoAValidar, setProductoAValidar] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -53,6 +54,7 @@ export function CMDProductos() {
 
         if (response.data.success) {
           setProducts(response.data.products);
+          console.log(response.data.products);
         } else {
           console.error(
             "Error al obtener los productos:",
@@ -88,6 +90,67 @@ export function CMDProductos() {
 
     fetchProveedores();
   }, []);
+
+  const fetchProductoAValidar = async (id) => {
+    if (!id) {
+      console.error('ID de producto no proporcionado');
+      return;
+    }
+  
+    try {
+      const response = await axios.post(`/api/ProductEngineering/getProductoValidar?id=${id}`);
+      if (response.data.success) {
+        const producto = response.data.producto;
+  
+        const registros = producto.identificadores.map((identificador) => {
+          const existente = producto.identificadoresProductos.find(
+            (p) => p.identificador_id === identificador.id
+          );
+  
+          return {
+            identificador_id: identificador.id,
+            registroN: existente?.registroN ?? '',
+            registroV: existente?.registroV ?? '',
+          };
+        });
+  
+        const paquete = {
+          producto: producto.producto,
+          identificadores: producto.identificadores,
+          identificadoresProductos: registros,
+        };
+  
+        setProductoAValidar(paquete); // si lo necesitas en otro lado
+  
+        generarFichaTecnica(paquete); // ⬅️ le pasamos directamente el objeto listo
+      } else {
+        console.error('Error al obtener el producto a validar:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error al hacer fetch del producto a validar:', error);
+    }
+  };
+  
+  const generarFichaTecnica = async (productoParaPDF) => {
+    if (!productoParaPDF) {
+      console.error('Producto a validar no proporcionado');
+      return;
+    }
+  
+    try {
+      const response = await axios.post(`/api/ProductEngineering/generarFichaTecnica`, productoParaPDF, {
+        responseType: 'blob',
+      });
+  
+      const file = new Blob([response.data], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL);
+    } catch (error) {
+      console.error('Error generando la ficha técnica:', error);
+    }
+  };  
+
+  console.log(productoAValidar);
 
   const getProveedores = async () => {
     try {
@@ -261,6 +324,7 @@ export function CMDProductos() {
       medicion: product.medicion,
       descripcion: product.descripcion,
       catalogoProductos: product.catalogo,
+      veredicto: product.veredicto,
     }
   }
 
@@ -1457,6 +1521,7 @@ export function CMDProductos() {
                   {user.nombre?.startsWith("Fórmula") ? 
                   (<Link href={`/configuraciones/cmd/Productos/validar_producto_formula?id=${user.id}`}><Button variant="outline" size="sm">Validar</Button></Link>) :
                   (<Link href={`/configuraciones/cmd/Productos/validar_producto?id=${user.id}`}><Button variant="outline" size="sm">Validar</Button></Link>)}
+                  {user.veredicto === 1 ? <Link href={`/configuraciones/cmd/Productos/generar_ficha_tecnica?id=${user.id}`}><Button variant="outline" size="sm">Generar ficha técnica</Button></Link> : user.veredicto === 0 ? <span>Producto no aceptado</span> : (<div hidden></div>)}
                   {user.catalogoProductos === 1 ? <Button size="sm" variant="destructive" onClick={() => handleQuitarDelCatalogo(user.id)}>Quitar del catálogo</Button> : <Button size="sm" onClick={() => handleAgregarAlCatalogo(user.id)} style={{width: "151px", backgroundColor: "#198754"}}>Enviar al catálogo</Button>}
                   {isMaster ? (<Button variant="destructive" size="sm" onClick={() => handleDelete(user.id)}>Eliminar</Button>) : (<div hidden></div>)}
                 </div>
