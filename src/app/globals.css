@@ -71,7 +71,3 @@
 button {
   transition: transform 0.3s ease-in-out;
 }
-
-button:hover {
-  transform: scale(1.1); /* Hace que la campanita crezca al pasar el mouse */
-}

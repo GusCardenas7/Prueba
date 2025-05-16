@@ -6,10 +6,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Obtener todas las subcategorías ordenadas por ID ascendente
-    const especificaciones = await SubcategoriaMateriaPrima.findAll({
+    const { TipoId, categoriaId } = req.query;
+
+    const options = {
       order: [['id', 'ASC']]
-    });
+    };
+
+    if (TipoId) {
+      options.where = { Tipo_id: TipoId };
+    }
+
+    if (categoriaId) {
+      options.where = { Categoria_id: categoriaId };
+    }
+
+    // Obtener todas las subcategorías ordenadas por ID ascendente
+    const especificaciones = await SubcategoriaMateriaPrima.findAll( options );
 
     // Retornar las especificaciones en formato JSON
     return res.status(200).json({ success: true, especificaciones });
