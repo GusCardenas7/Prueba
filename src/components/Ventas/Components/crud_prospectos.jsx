@@ -11,23 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import styles from "../../../../public/CSS/spinner.css";
 import { ChevronRight, PackageOpen, Search } from "lucide-react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useUser } from "@/pages/api/hooks";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link";
 
 export function Prospectos() {
@@ -181,7 +169,7 @@ export function Prospectos() {
         </a>
         <ChevronRight className="mx-2 h-4 w-4" />
         <a
-          href="/configuraciones/cmd/actores"
+          href="/ventas/prospectos"
           className="font-bold hover:underline text-primary"
         >
           Administrador de prospectos

@@ -119,7 +119,6 @@ export function ValidarProducto() {
             );
             if (response.data.success) {
               setActores(response.data.actores);
-              console.log(response.data.actores);
             } else {
               console.error(
                 "Error al obtener los actores:",

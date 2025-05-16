@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from '../../../../public/CSS/spinner.css';
 import { useSession } from "next-auth/react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,18 +13,55 @@ import { CornerDownLeft } from 'lucide-react';
 import Link from "next/link";
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
+import { getSession } from 'next-auth/react';
+import { Textarea } from "@/components/ui/textarea";
 
-export function EditarProspecto() {
+export function NuevoLevantamiento() {
   const {data: session, status} = useSession();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const [idUser, setID] = useState("");
+  const [idProspecto, setIDProspecto] = useState(null);
   const [prospecto, setProspecto] = useState(null);
-  const [nombre, setNombre] = useState(null);
-  const [numero, setNumero] = useState(null);
-  const [correo, setCorreo] = useState(null);
-  const [marca, setMarca] = useState(null);
-  const [redes_sociales, setRedesSociales] = useState(null);
   const [imagenSeleccionadaPreview, setImagenSeleccionadaPreview] = useState(null);
+  const [searchTermPass, setSearchTermPass] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [prospectos, setProspectos] = useState([]);
+  const inputRef = useRef(null);
+  const [selectedProspecto, setSelectedProspecto] = useState(null);
+  const [publico_objetivo, setPublicoObjetivo] = useState(null);
+  const [canales_distribucion, setCanalesDistribucion] = useState(null);
+  const [monto_inversion, setMontoInversion] = useState(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTermPass);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler); // limpia el timeout si se escribe antes de los 3s
+    };
+  }, [searchTermPass]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const session = await getSession();
+      if (session) {
+        const response = await fetch("/api/Users/getUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ correo: session.user.email, numero_empleado: session.user.numero_empleado }),
+        });
+        const userData = await response.json();
+        if (userData.success) {
+          setID(userData.user.id);
+        } else {
+          alert("Error al obtener los datos del usuario");
+        }
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const fetchArchivo = async (prospecto) => {
     const archivo = prospecto?.constancia;
@@ -31,16 +69,41 @@ export function EditarProspecto() {
     if (archivo) {
       const url = `/api/Sales/obtenerConstancia?rutaDocumento=${encodeURIComponent(archivo)}`;
       setImagenSeleccionadaPreview(url);
+    } else {
+      document.getElementById("archivoPDF").value = null;
+      setImagenSeleccionadaPreview(null);
     }
   };
 
   useEffect(() => {
-    const fetchProspecto = async () => {
+    const fetchProspectos = async () => {
+      try {
+        const response = await axios.get(
+          "/api/Sales/getProspectos"
+        );
+        if (response.data.success) {
+          setProspectos(response.data.prospectos);
+        } else {
+          console.error(
+            "Error al obtener los prospectos:",
+            response.data.message
+          );
+        }
+      } catch (error) {
+        console.error("Error al hacer fetch de los prospectos:", error);
+      }
+    };
+
+    fetchProspectos();
+  }, []);
+
+    const fetchProspecto = async (id) => {
         try {
             const response = await axios.get(`/api/Sales/getProspecto?id=${id}`);
             if (response.data.success) {
                 setProspecto(response.data.prospecto);
                 fetchArchivo(response.data.prospecto);
+                setIDProspecto(response.data.prospecto.id);
             } else {
                 console.error("Error al obtener el prospecto:", response.data.message);
             }
@@ -48,9 +111,6 @@ export function EditarProspecto() {
             console.error("Error al hacer fetch del prospecto:", error);
         }
     };
-
-    fetchProspecto();
-  }, []);
 
   if (status === "loading") {
     return (
@@ -89,8 +149,8 @@ export function EditarProspecto() {
     });
 
     try {
-        const response = await axios.post("/api/Sales/actualizarProspecto", 
-            {id, prospecto, imagenSeleccionadaPreview},
+        const response = await axios.post("/api/Sales/guardarLevantamiento", 
+            {idUser, idProspecto, prospecto, publico_objetivo, canales_distribucion, monto_inversion, imagenSeleccionadaPreview},
         );
 
         Swal.close();
@@ -109,33 +169,40 @@ export function EditarProspecto() {
         if (response.data.success) {
             Swal.fire({
                 title: "Éxito",
-                text: "El prospecto ha sido actualizado correctamente",
+                text: "Se ha creado correctamente",
                 icon: "success",
                 timer: 3000,
                 showConfirmButton: false,
             }).then(() => {
-                window.location.href = "/ventas/prospectos";
+                window.location.href = "/ventas/levantamiento_requerimientos";
             });  
         } else {
             Swal.fire({
                 title: "Error",
-                text: "Error al actualizar al prospecto",
+                text: "Error al crear el registro",
                 icon: "error",
                 timer: 3000,
                 showConfirmButton: false,
             });
         }
     } catch (err) {
-        console.error("Error en la actualización:", err);
+        console.error("Error en el registro:", err);
         Swal.close();
         Swal.fire({
             title: "Error",
-            text: "Hubo un problema con la actualización",
+            text: "Hubo un problema con el registro",
             icon: "error",
             timer: 3000,
             showConfirmButton: false,
         });
     }
+  };
+
+  const handleSelectProspecto = (prospectoId) => {
+    fetchProspecto(prospectoId);
+    const seleccionado = prospectos.find((prospecto) => prospecto.id.toString() === prospectoId);
+    setSelectedProspecto(seleccionado);
+    setSearchTermPass(""); // Resetea la búsqueda después de seleccionar un usuario
   };
 
   const handleImagenSeleccionada = (e) => {
@@ -181,23 +248,72 @@ export function EditarProspecto() {
     return (
       prospecto?.nombre &&
       prospecto?.correo &&
-      prospecto?.marca
+      prospecto?.marca && 
+      publico_objetivo &&
+      canales_distribucion &&
+      monto_inversion
     );
   };
 
   return (
     <div className="container mx-auto p-6">
         <div>
-            <Link href="/ventas/prospectos"><Button><CornerDownLeft className="h-4 w-4" />Regresar</Button></Link>
+            <Link href="/ventas/levantamiento_requerimientos"><Button><CornerDownLeft className="h-4 w-4" />Regresar</Button></Link>
         </div>
         <div className="flex justify-center items-center text-center mb-8">
-            <CardTitle className="text-3xl font-bold">Editar prospecto</CardTitle>
+            <CardTitle className="text-3xl font-bold">Levantamiento de requerimientos</CardTitle>
         </div>
         <div className="flex justify-center mb-4">
-            <form 
-                onSubmit={handleSubmit} 
+            <form  
+                onSubmit={handleSubmit}
                 className="w-[1400px] border border-gray-300 rounded-lg shadow-md p-6 bg-white"
-            >
+            >   
+                {/* Selección de usuarios con búsqueda manual */}
+                <div className="mb-4">
+                    <div className="space-y-2">
+                        <Label>Prospecto</Label>
+                        <Select onValueChange={handleSelectProspecto} value={selectedProspecto?.id.toString() || ''}>
+                        <SelectTrigger>
+                            <div className="truncate">
+                            {selectedProspecto?.nombre || 'Seleccionar prospecto'}
+                            </div>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                            <div className="p-2">
+                            <Input
+                                ref={inputRef}
+                                placeholder="Buscar prospecto..."
+                                value={searchTermPass}
+                                onChange={(e) => setSearchTermPass(e.target.value)}
+                                onKeyDown={(e) => e.stopPropagation()}
+                            />
+                            </div>
+
+                            {prospectos.filter(p =>
+                            p.nombre.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+                            ).length === 0 ? (
+                            <div className="p-2 text-center text-gray-500">No se encontraron prospectos</div>
+                            ) : (
+                            prospectos
+                                .filter(p =>
+                                p.nombre.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+                                )
+                                .map(p => (
+                                <SelectItem key={p.id.toString()} value={p.id.toString()}>
+                                    {p.nombre}
+                                </SelectItem>
+                                ))
+                            )}
+                        </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <div style={{backgroundColor: "rgb(31 41 55)"}} className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="space-y-2 col-span-2 text-center">
+                        <Label style={{fontSize: "20px", color: "white"}}>Datos del cliente</Label>
+                    </div>
+                </div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2">
                     <Label htmlFor="nombre">Nombre completo</Label>
@@ -227,7 +343,7 @@ export function EditarProspecto() {
                 </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="space-y-2 col-span-2">
                     <Label>Constancia de situación fiscal</Label>
                     <Input
@@ -247,8 +363,30 @@ export function EditarProspecto() {
                     )}
                 </div>
                 </div>
+                <div style={{backgroundColor: "rgb(31 41 55)"}} className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="space-y-2 col-span-2 text-center">
+                        <Label style={{fontSize: "20px", color: "white"}}>Otros datos</Label>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="space-y-2">
+                    <Label htmlFor="publico_objetivo">Público objetivo</Label>
+                    <Textarea id="publico_objetivo" name="publico_objetivo" value={publico_objetivo || ''} onChange={(e) => setPublicoObjetivo(e.target.value)} placeholder="..." />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="canales_distribucion">Canales de distribución</Label>
+                    <Textarea id="canales_distribucion" name="canales_distribucion" value={canales_distribucion || ''} onChange={(e) => setCanalesDistribucion(e.target.value)} placeholder="..." />
+                </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="space-y-2 col-span-2">
+                    <Label htmlFor="monto_inversion">Monto de inversión</Label>
+                    <Input id="monto_inversion" name="monto_inversion" type="number" value={monto_inversion || ''} onChange={(e) => setMontoInversion(e.target.value)} placeholder="$" />
+                </div>
+                </div>
                 <Button type="submit" className="w-full mt-4" disabled={!formularioCompleto()}>
-                    Editar prospecto
+                    Terminar levantamiento
                 </Button>
             </form>
         </div>

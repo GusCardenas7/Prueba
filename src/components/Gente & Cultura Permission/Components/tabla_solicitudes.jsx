@@ -314,7 +314,6 @@ export function TablaSolicitudes() {
           `/api/Users/getBossUsers?id=${idUser}`
         );
         if (response.data.success) {
-          console.log(JSON.stringify(response.data.users));
           setUsers(response.data.users);
         } else {
           console.error(
@@ -341,7 +340,6 @@ export function TablaSolicitudes() {
             `/api/Gente&CulturaAbsence/getUsersBonos?departamento=${departamentoBonos}`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -358,7 +356,6 @@ export function TablaSolicitudes() {
             `/api/Gente&CulturaAbsence/getUsersBonos`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -764,7 +761,6 @@ export function TablaSolicitudes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
   
@@ -792,8 +788,6 @@ export function TablaSolicitudes() {
   
             const ftpResult = await ftpResponse.json();
             if (ftpResponse.ok) {
-              console.log("Archivo subido al FTP exitosamente", ftpResult);
-              
               // Asignar el nombre del archivo subido a formData.comprobante
               formData.comprobante = ftpResult.fileName;
             } else {

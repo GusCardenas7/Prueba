@@ -335,14 +335,10 @@ export function EmpresasTabla() {
 
   useEffect(() => {
     if (!users || users.length === 0) {
-      console.log("No hay usuarios disponibles para filtrar.");
       return;
     }
 
     if (!selectedDepartamento) {
-      console.log(
-        "Ningún departamento seleccionado, usuarios filtrados vacíos."
-      );
       setFilteredUsers([]);
       return;
     }
@@ -351,7 +347,6 @@ export function EmpresasTabla() {
       (usuario) => usuario.departamento_id === selectedDepartamento
     );
 
-    console.log("Usuarios filtrados antes de actualizar el estado:", filtered);
     setFilteredUsers(filtered);
   }, [selectedDepartamento, users]);
 
@@ -404,7 +399,6 @@ export function EmpresasTabla() {
     const userToEdit = users.find((user) => user.id === userId); // Buscar el usuario en el estado
     setSelectedUser(userToEdit); // Establecer el usuario seleccionado en el estado
     setFormulario(userToEdit.formulario);
-    console.log(userToEdit.formulario.fechaInicio);
   };
 
   const handleInputChange = (value, name) => {
@@ -466,7 +460,6 @@ export function EmpresasTabla() {
       setError(
         "Hubo un problema con el registro. Por favor, intenta nuevamente."
       );
-      console.log(err);
     }
   };
 

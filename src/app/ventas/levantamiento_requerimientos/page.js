@@ -1,13 +1,13 @@
-import { CMDActores as C } from "@/components/ING PRODUCTO/Components/cmd_actores";
+import { LevantamientoRequerimientos as L } from '@/components/Ventas/Components/crud_levantamiento';
 import { Suspense } from 'react'
-function Usuario() {
+function Levantamientos() {
   return (
     <Suspense>
     <div>
-      <C />
+      <L />
     </div>
     </Suspense>
   );
 }
 
-export default Usuario;
+export default Levantamientos;

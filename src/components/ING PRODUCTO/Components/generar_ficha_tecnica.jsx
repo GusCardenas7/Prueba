@@ -131,7 +131,6 @@ export function FichaTecnica() {
           );
           if (response.data.success) {
             setActores(response.data.actores);
-            console.log(response.data.actores);
           } else {
             console.error(
               "Error al obtener los actores:",
@@ -184,13 +183,41 @@ export function FichaTecnica() {
 
     const handleImagenSeleccionada = (e) => {
       const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagenSeleccionadaPreview(reader.result); // guardar base64 para previsualizar
-        };
-        reader.readAsDataURL(file);
+  
+      if (!file) return;
+  
+      // Validar tipo MIME
+      if (!file.type.startsWith("image/")) {
+        Swal.fire({
+            title: "Error",
+            text: `El archivo "${file.name}" no tiene un formato permitido. Solo se permiten archivos de tipo imagen.`,
+            icon: "error",
+            timer: 3000,
+            showConfirmButton: false,
+        });
+        document.getElementById("imagen").value = null;
+        return;
       }
+  
+      // Validar tamaño máximo (4MB)
+      const maxSizeInBytes = 4 * 1024 * 1024;
+      if (file.size > maxSizeInBytes) {
+          Swal.fire({
+              title: "Error",
+              text: `El archivo "${file.name}" es demasiado grande. Máximo 4MB.`,
+              icon: "error",
+              timer: 3000,
+              showConfirmButton: false,
+          });
+          document.getElementById("imagen").value = null;
+          return;
+      }
+  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+          setImagenSeleccionadaPreview(reader.result); // Guardar base64
+      };
+      reader.readAsDataURL(file);
     };
 
     const todasToleranciasLlenas = productoAValidar?.identificadoresProductos
@@ -597,6 +624,8 @@ export function FichaTecnica() {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2 col-span-2">
                     <Input
+                      id="imagen"
+                      name="imagen"
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImagenSeleccionada(e)}

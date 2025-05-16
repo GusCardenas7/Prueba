@@ -139,7 +139,6 @@ export function EditarEtiqueta() {
           throw new Error('Error al obtener los datos');
         }
         const data = await response.json();
-        console.log(data)
         let prueba;
 
         try {
@@ -303,7 +302,6 @@ export function EditarEtiqueta() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formulario);
 
     const dataToSend = {
       ...formulario,
