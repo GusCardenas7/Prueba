@@ -53,7 +53,6 @@ export function InventarioIT() {
       try {
         const response = await axios.get('/api/IT/getInventario');
         setInventario(response.data); // Guardar datos en el estado
-        console.log('Datos del inventario:', response.data); // Verificar en la consola
       } catch (error) {
         console.error('Error al obtener inventario:', error);
       }
@@ -80,7 +79,6 @@ export function InventarioIT() {
 
     const formData = new FormData();
     formData.append('file', archivo);
-    console.log('Archivo seleccionado:', archivo);
     try {
       // const response = await axios.post('/api/IT/insertInventarioMasivo', formData, {
       //   headers: {
@@ -93,7 +91,6 @@ export function InventarioIT() {
       });
 
       alert('Guardado.');
-      console.log(response.data);
     } catch (error) {
       console.error('Error al subir inventario:', error);
       alert('Hubo un error al subir el archivo.',error);

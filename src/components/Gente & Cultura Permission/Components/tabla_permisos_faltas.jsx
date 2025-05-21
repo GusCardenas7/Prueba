@@ -264,8 +264,6 @@ export function TablaPermisosFalta() {
     // Determinar el tipo a utilizar
     const tipoSeleccionado = tipo || modalDataStatus.tipo || tipoFormulario2;
 
-    console.log("Tipo de formulario:", tipoSeleccionado);
-
     if (!index || !nuevoEstatus) {
       console.error("Error: Falta un valor en handleChangeStatus", {
         index,
@@ -308,8 +306,6 @@ export function TablaPermisosFalta() {
                        Puedes revisarla haciendo clic en este enlace: <a href="/gente_y_cultura/solicitudes" style="color: blue; text-decoration: underline;">Revisar solicitud</a>`
             : `<strong>${nombre} ${apellidos}</strong> ha actualizado el estatus de la papeleta con el id ${index} a: <strong>${nuevoEstatus}</strong>.<br>
                        Puedes revisarla haciendo clic en este enlace: <a href="/papeletas_usuario" style="color: blue; text-decoration: underline;">Revisar papeleta</a>`;
-
-          console.log("Notificación:", tipoNotificacion, mensaje);
 
           // Enviar la notificación
           try {
@@ -396,7 +392,6 @@ export function TablaPermisosFalta() {
             `/api/Gente&CulturaAbsence/getUsersBonos?departamento=${departamentoBonos}`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -413,7 +408,6 @@ export function TablaPermisosFalta() {
             `/api/Gente&CulturaAbsence/getUsersBonos`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -437,7 +431,6 @@ export function TablaPermisosFalta() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
     try {

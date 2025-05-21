@@ -310,12 +310,10 @@ export function UserManagementTable() {
 
   useEffect(() => {
     if (!users || users.length === 0) {
-      console.log("No hay usuarios disponibles para filtrar.");
       return;
     }
   
     if (!selectedDepartamento) {
-      console.log("Ningún departamento seleccionado, usuarios filtrados vacíos.");
       setFilteredUsers([]);
       return;
     }
@@ -324,7 +322,6 @@ export function UserManagementTable() {
       (usuario) => usuario.departamento_id === selectedDepartamento || usuario.departamento_id === 17
     );
   
-    console.log("Usuarios filtrados antes de actualizar el estado:", filtered);
     setFilteredUsers(filtered);
   }, [selectedDepartamento, users]);
 
@@ -441,7 +438,6 @@ export function UserManagementTable() {
     } catch (err) {
       console.error('Error en el registro:', err);
       setError('Hubo un problema con el registro. Por favor, intenta nuevamente.');
-      console.log(err);
     }
   };
 

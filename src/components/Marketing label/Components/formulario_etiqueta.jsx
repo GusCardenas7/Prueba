@@ -127,7 +127,6 @@ export function DocumentSigningForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formulario);
 
     Swal.fire({
       title: 'Cargando...',

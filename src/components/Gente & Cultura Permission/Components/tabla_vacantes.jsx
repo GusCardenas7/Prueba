@@ -114,8 +114,7 @@ export function TablaVacantes() {
       
       try {
         const response = await axios.get(`/api/MarketingLabel/permiso?userId=${idUser}`);
-        setPermisos(response.data); // Guardar los permisos
-        console.log("PERMISOS USUARIO: " + JSON.stringify(response.data));
+        setPermisos(response.data);
       } catch (error) {
         console.error('Error al obtener permisos:', error);
       }
@@ -197,7 +196,6 @@ export function TablaVacantes() {
   }
 
   const handleChangeEstatus = ({ name, value }) => {
-    console.log("Cambiando estatus:", name, value); // Depuración
     if (name === "estatus") {
       setEstatus(value); // Actualiza el estado
       setFormData(prevFormData => ({
@@ -262,7 +260,6 @@ export function TablaVacantes() {
     try {
       const response = await axios.get('/api/Gente&CulturaVacants/getVacantes') // Asegúrate de que esta ruta esté configurada en tu backend
       setEventos(response.data)
-      console.log(response.data)
     } catch (error) {
       console.error('Error al obtener eventos:', error)
     }
@@ -280,7 +277,6 @@ export function TablaVacantes() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
     try {
@@ -408,7 +404,6 @@ export function TablaVacantes() {
   const handleEditVacant = (vacantId) => {
     const vacantToEdit = eventos.find(vacant => vacant.id === vacantId); // Buscar el usuario en el estado
     setSelectedVacant(vacantToEdit); // Establecer el usuario seleccionado en el estado
-    console.log(vacantToEdit.vacante)
   };
 
   const handleSubmitUpdate = async (e) => {

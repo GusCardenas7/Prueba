@@ -248,7 +248,6 @@ export function EventPlanningForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Datos del formulario:", formData);
 
     try {
       const response = await fetch('/api/MarketingStrategy/guardarFormulario', {

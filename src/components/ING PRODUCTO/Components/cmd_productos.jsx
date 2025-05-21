@@ -107,7 +107,6 @@ export function CMDProductos() {
 
         if (response.data.success) {
           setProducts(response.data.products);
-          console.log(response.data.products);
         } else {
           console.error(
             "Error al obtener los productos:",
@@ -152,7 +151,6 @@ export function CMDProductos() {
         );
         if (response.data.success) {
           setActores(response.data.actores);
-          console.log(response.data.actores);
         } else {
           console.error(
             "Error al obtener los actores:",
@@ -643,7 +641,6 @@ export function CMDProductos() {
       ...prevProduct,
       imagenes: [...prevProduct.imagenes, ...newImages],
     }));
-    console.log(selectedProduct.imagenes);
   };
 
   // Para eliminar imágenes seleccionadas

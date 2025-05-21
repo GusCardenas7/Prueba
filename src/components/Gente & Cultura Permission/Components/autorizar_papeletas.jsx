@@ -235,7 +235,6 @@ export function AutorizarPapeletas() {
           `/api/Users/getBossUsers?id=${idUser}`
         );
         if (response.data.success) {
-          console.log(JSON.stringify(response.data.users));
           setUsers(response.data.users);
         } else {
           console.error(
@@ -262,7 +261,6 @@ export function AutorizarPapeletas() {
             `/api/Gente&CulturaAbsence/getUsersBonos?departamento=${departamentoBonos}`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -279,7 +277,6 @@ export function AutorizarPapeletas() {
             `/api/Gente&CulturaAbsence/getUsersBonos`
           );
           if (response.data.success) {
-            console.log(JSON.stringify(response.data.users));
             setUsersBonos(response.data.users);
           } else {
             console.error(
@@ -607,7 +604,6 @@ export function AutorizarPapeletas() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
 

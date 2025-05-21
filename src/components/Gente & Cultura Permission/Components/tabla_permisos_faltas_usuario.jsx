@@ -314,7 +314,6 @@ export function TablaPermisosFaltaUsuario() {
           `/api/Gente&CulturaAbsence/getFaltas?id=${idUser}`
         ); // Asegúrate de que esta ruta esté configurada en tu backend
         setEventos(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error al obtener eventos:", error);
       }
@@ -657,7 +656,6 @@ export function TablaPermisosFaltaUsuario() {
     });
   
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
   
@@ -684,8 +682,6 @@ export function TablaPermisosFaltaUsuario() {
           Swal.close();
 
           if (ftpResponse.ok) {
-            console.log("Archivo subido al FTP exitosamente", ftpResult);
-  
             // Asignar el nombre del archivo subido a formData.comprobante
             formData.comprobante = ftpResult.fileName;
           } else {
@@ -842,7 +838,6 @@ export function TablaPermisosFaltaUsuario() {
     });
   
     if (!session) {
-      console.log("No se ha iniciado sesión");
       return;
     }
   
@@ -869,8 +864,6 @@ export function TablaPermisosFaltaUsuario() {
           Swal.close();
 
           if (ftpResponse.ok) {
-            console.log("Archivo subido al FTP exitosamente", ftpResult);
-  
             // Asignar el nombre del archivo subido a formData.comprobante
             formData.comprobante = ftpResult.fileName;
           } else {
