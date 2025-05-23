@@ -216,13 +216,13 @@ export function LevantamientoFormulaciones() {
                         </SelectTrigger>
 
                         <SelectContent>
-                            <SelectItem value="0">Sin loteado</SelectItem>
-                            <SelectItem value="1">Loteado regular</SelectItem>
+                            <SelectItem value="1">Sin loteado</SelectItem>
+                            <SelectItem value="2">Loteado regular</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
                 </div>
-                {levantamiento?.loteado?.toString() === "1" && (
+                {levantamiento?.loteado?.toString() === "2" && (
                     <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="space-y-2 col-span-2">
                         <Label htmlFor="lenguajeLoteado">Lenguaje del loteado</Label>
@@ -251,11 +251,11 @@ export function LevantamientoFormulaciones() {
                             className="flex space-x-8"
                         >
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="1" id={'si'} />
+                                <RadioGroupItem value="2" id={'si'} />
                                 <Label htmlFor={'si'}>Sí</Label>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <RadioGroupItem value="0" id={'no'} />
+                                <RadioGroupItem value="1" id={'no'} />
                                 <Label htmlFor={'no'}>No</Label>
                             </div>
                         </RadioGroup>
