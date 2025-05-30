@@ -47,6 +47,13 @@ export default function ContenedorReferencias(props) {
       </legend>
 
       <div className="space-y-6 mt-4">
+        {referencias.length === 0 && (
+          <div className="text-center p-4 bg-gray-100 rounded-lg shadow-sm border border-gray-100">
+            <p className="text-lx text-gray-500">
+              No se han agregado referencias.
+            </p>
+          </div>
+        )}
         {referencias.map((referencia) => (
           <div
             key={referencia.id}
@@ -105,7 +112,7 @@ export default function ContenedorReferencias(props) {
                         width={150}
                         height={150}
                         alt={referencia.nombre}
-                        className="w-full h-32 object-cover group-hover/image:scale-105 transition-transform duration-300"
+                        className="w-full h-32 group-hover/image:scale-105 transition-transform duration-300 object-contain"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/image:bg-opacity-10 transition-all duration-300" />
                     </div>

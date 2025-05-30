@@ -29,7 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export function LevantamientoFormulaciones(props) {
-  const { id, EmitUpdate } = props;
+  const { id, emitUpdate } = props;
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const idLevantamiento = searchParams.get("id") || id;
@@ -121,7 +121,7 @@ export function LevantamientoFormulaciones(props) {
           timer: 3000,
           showConfirmButton: false,
         }).then(() => {
-          EmitUpdate();
+          emitUpdate();
         });
       } else {
         Swal.fire({

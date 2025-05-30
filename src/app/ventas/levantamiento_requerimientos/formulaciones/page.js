@@ -24,7 +24,7 @@ function Formulaciones() {
       </div>
       <Suspense>
         <div>
-          <L EmitUpdate={handleUpdate} />
+          <L emitUpdate={handleUpdate} />
         </div>
       </Suspense>
     </>
