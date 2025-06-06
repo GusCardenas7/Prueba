@@ -64,6 +64,15 @@ export default NextAuth({
     signOut: "/",
     error: "/error",
   },
+  session: {
+    strategy: "jwt",
+    maxAge: 7200,
+    updateAge: 0,
+  },
+  jwt: {
+    maxAge: 7200,
+    updateAge: 0,
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -74,6 +83,7 @@ export default NextAuth({
         token.rol = user.rol;
         token.departamento = user.departamento;
         token.idPermiso = user.idPermiso;
+        token.exp = Math.floor(Date.now() / 1000) + 7200;
       }
       return token;
     },
@@ -93,7 +103,9 @@ export default NextAuth({
       if (account.provider === "google") {
         try {
           // Verifica si el usuario ya existe en la base de datos
-          let usuario = await Usuario.findOne({ where: { correo: user.email } });
+          let usuario = await Usuario.findOne({
+            where: { correo: user.email },
+          });
 
           if (!usuario) {
             // Si el usuario no existe, lo inserta en la base de datos
@@ -104,7 +116,10 @@ export default NextAuth({
             });
           }
         } catch (error) {
-          console.error("Error al verificar o insertar el usuario:", error.message);
+          console.error(
+            "Error al verificar o insertar el usuario:",
+            error.message
+          );
         }
       }
       return true;

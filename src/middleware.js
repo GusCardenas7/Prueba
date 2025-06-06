@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import axios from "axios";
 
 function matchRoute(pattern, path) {
   // Quita el query string
@@ -8,7 +7,9 @@ function matchRoute(pattern, path) {
   const cleanPattern = pattern.replace(/\/$/, "");
 
   // Convierte :param en expresión regular
-  const regex = new RegExp("^" + cleanPattern.replace(/:[^/]+/g, "[^/]+") + "$");
+  const regex = new RegExp(
+    "^" + cleanPattern.replace(/:[^/]+/g, "[^/]+") + "$"
+  );
   return regex.test(cleanPath);
 }
 
@@ -30,10 +31,12 @@ export async function middleware(req) {
   // Obtener permisos del usuario desde la API
   let permisos = {};
   try {
-    const response = await axios.get(
+    const res = await fetch(
       `https://aionnet.vercel.app/api/MarketingLabel/permiso?userId=${idUser}`
     );
-    permisos = response.data;
+    if (res.ok) {
+      permisos = await res.json();
+    }
   } catch (error) {
     console.error("Error al obtener permisos:", error);
   }
@@ -55,25 +58,32 @@ export async function middleware(req) {
     isITMember: rol !== "Máster" && departamento === 1,
     isStandardMkt: rol !== "Máster" && tienePermiso("Marketing", "Firmas"),
     isStandard: rol === "Estándar",
-    hasAccessPapeletas: rol !== "Máster" && tienePermiso("Papeletas", "Modulo papeletas"),
-    hasAccessAutorizarPapeletas: rol !== "Máster" && tienePermiso("Papeletas", "Autorizar"),
-    hasAccessSolicitudes: rol !== "Máster" && tienePermiso("Papeletas", "Solicitudes"),
-    hasAllAccessVacantes: rol === "Administrador" && departamento === 5 && tienePermiso("Gente y Cultura", "Vacantes"),
-    hasAccessVacantes: rol !== "Máster" && tienePermiso("Gente y Cultura", "Vacantes sin sueldo"),
-    hasAccessCMDProductos: rol !== "Máster" && tienePermiso("Ing. Productos", "CMD Productos"),
-    hasAccessLevantamiento: rol !== "Máster" && tienePermiso("Ventas", "Levantamiento requerimientos"),
+    hasAccessPapeletas:
+      rol !== "Máster" && tienePermiso("Papeletas", "Modulo papeletas"),
+    hasAccessAutorizarPapeletas:
+      rol !== "Máster" && tienePermiso("Papeletas", "Autorizar"),
+    hasAccessSolicitudes:
+      rol !== "Máster" && tienePermiso("Papeletas", "Solicitudes"),
+    hasAllAccessVacantes:
+      rol === "Administrador" &&
+      departamento === 5 &&
+      tienePermiso("Gente y Cultura", "Vacantes"),
+    hasAccessVacantes:
+      rol !== "Máster" &&
+      tienePermiso("Gente y Cultura", "Vacantes sin sueldo"),
+    hasAccessCMDProductos:
+      rol !== "Máster" && tienePermiso("Ing. Productos", "CMD Productos"),
+    hasAccessLevantamiento:
+      rol !== "Máster" &&
+      tienePermiso("Ventas", "Levantamiento requerimientos"),
     hasAccessFormulas: rol !== "Máster" && tienePermiso("Ventas", "Formulas"),
-    hasAccessCostos: rol !== "Máster" && tienePermiso("Ventas", "Costos")
+    hasAccessCostos: rol !== "Máster" && tienePermiso("Ventas", "Costos"),
   };
 
   // Rutas permitidas por rol
   const roleRoutes = {
     isMaster: "*",
-    isDadoDeBaja: [
-      "/inicio",
-      "/perfil",
-      "/papeletas_usuario",
-    ],
+    isDadoDeBaja: ["/inicio", "/perfil", "/papeletas_usuario"],
     isAdminMkt: [
       "/inicio",
       "/perfil",
@@ -83,7 +93,7 @@ export async function middleware(req) {
       "/marketing/estrategias/editar_formulario",
       "/marketing/etiquetas",
       "/marketing/etiquetas/formulario",
-      "/marketing/etiquetas/Editar"
+      "/marketing/etiquetas/Editar",
     ],
     isAdminGC: [
       "/inicio",
@@ -99,7 +109,7 @@ export async function middleware(req) {
       "/papeletas_usuario",
       "/marketing/etiquetas",
       "/marketing/etiquetas/formulario",
-      "/marketing/etiquetas/Editar"
+      "/marketing/etiquetas/Editar",
     ],
     isStandard: ["/inicio", "/perfil", "/papeletas_usuario"],
     hasAccessPapeletas: [
@@ -112,13 +122,13 @@ export async function middleware(req) {
       "/inicio",
       "/perfil",
       "/papeletas_usuario",
-      "/gente_y_cultura/autorizar_papeletas"
+      "/gente_y_cultura/autorizar_papeletas",
     ],
     hasAccessSolicitudes: [
       "/inicio",
       "/perfil",
       "/papeletas_usuario",
-      "/gente_y_cultura/solicitudes"
+      "/gente_y_cultura/solicitudes",
     ],
     hasAllAccessVacantes: [
       "/inicio",
@@ -155,7 +165,7 @@ export async function middleware(req) {
       "/ventas/levantamiento_requerimientos",
       "/ventas/levantamiento_requerimientos/nuevo_levantamiento",
       "/ventas/levantamiento_requerimientos/editar_levantamiento",
-      "/ventas/levantamiento_requerimientos/detalle_levantamiento/:id"
+      "/ventas/levantamiento_requerimientos/detalle_levantamiento/:id",
     ],
   };
 
